@@ -2,6 +2,7 @@
   <div class="home container">
     <div class="card" v-for="keep in keeps" :key="keep.id">
       <div class="card-content">
+        <i class="material-icons delete" @click="deletekeep(keep.id)">delete</i>
         <h2 class="indigo-text">{{ keep.title }}</h2>
         <ul class="ingredients">
           <li v-for="(item, index) in keep.ingredients" :key="index">
@@ -37,6 +38,13 @@ export default {
       ],
     };
   },
+  methods: {
+    deletekeep(id) {
+      this.keeps = this.keeps.filter(keep => {
+        return keep.id != id
+      })
+    }
+  },
 };
 </script>
 
@@ -57,5 +65,14 @@ export default {
 }
 .home .ingredients li {
   display: inline-block;
+}
+
+.home .delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  cursor: pointer;
+  color: #AAA;
+  font-size: 1.4em;
 }
 </style>
