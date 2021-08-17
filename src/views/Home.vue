@@ -15,36 +15,33 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import db from '@/firebase/init';
 
 export default {
   name: "Home",
   components: {},
   data() {
     return {
-      keeps: [
-        {
-          id: 1,
-          title: "Aymane Benhima",
-          slug: "aymane-benhima",
-          ingredients: ["front-end", "back-end"],
-        },
-        {
-          id: 2,
-          title: "Ouail Benhima",
-          slug: "ouail-benhima",
-          ingredients: ["css", "js"],
-        },
-      ],
+      keeps: [],
     };
   },
   methods: {
     deletekeep(id) {
-      this.keeps = this.keeps.filter(keep => {
-        return keep.id != id
-      })
-    }
+      this.keeps = this.keeps.filter((keep) => {
+        return keep.id != id;
+      });
+    },
   },
+  created() {
+      db.collection('keeps').get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          let keep = doc.data();
+          keep.id = doc.id;
+          this.keeps.push(keep)
+        });
+      })
+  }
 };
 </script>
 
@@ -72,7 +69,7 @@ export default {
   top: 4px;
   right: 4px;
   cursor: pointer;
-  color: #AAA;
+  color: #aaa;
   font-size: 1.4em;
 }
 </style>
