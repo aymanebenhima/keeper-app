@@ -8,11 +8,16 @@
       </div>
       <div class="add-keep" v-for="(item, index) in items" :key="index">
         <label for="item">Item: {{ index + 1 }}</label>
-        <input type="text" name="item" v-model="items[index]">
+        <input type="text" name="item" v-model="items[index]" />
       </div>
       <div class="filed add-keep">
         <label for="add-keep">Add keep and (press SPACE):</label>
-        <input @keydown.space.prevent="addItem" v-model="another" type="text" name="add-keep" />
+        <input
+          @keydown.space.prevent="addItem"
+          v-model="another"
+          type="text"
+          name="add-keep"
+        />
       </div>
       <div class="field center-align">
         <p v-if="feedback" class="red-text">{{ feedback }}</p>
@@ -23,6 +28,8 @@
 </template>
 
 <script>
+import db from "@/firebase/init";
+import slugify from "slugify";
 export default {
   data() {
     return {
@@ -30,11 +37,34 @@ export default {
       another: null,
       items: [],
       feedback: null,
+      slug: null,
     };
   },
   methods: {
     addKeep() {
-      console.log(this.title);
+      if (this.title) {
+        this.feedback = null;
+        // Create slug
+        this.slug = slugify(this.title, {
+          replacement: "-",
+          remove: /[$*_+~.()'"!\-:@]/g,
+          lower: true,
+        });
+        db.collection("keeps")
+          .add({
+            title: this.title,
+            ingredients: this.items,
+            slug: this.slug,
+          })
+          .then(() => {
+            this.$router.push({ name: "Home" });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        this.feedback = "You must enter a keep title !";
+      }
     },
     addItem() {
       if (this.another) {
