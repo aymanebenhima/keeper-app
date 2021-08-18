@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import db from '@/firebase/init';
+import db from "@/firebase/init";
 
 export default {
   name: "Home",
@@ -27,21 +27,27 @@ export default {
   },
   methods: {
     deletekeep(id) {
-      this.keeps = this.keeps.filter((keep) => {
-        return keep.id != id;
-      });
+      db.collection("keeps")
+        .doc(id)
+        .delete()
+        .then(() => {
+          this.keeps = this.keeps.filter((keep) => {
+            return keep.id != id;
+          });
+        });
     },
   },
   created() {
-      db.collection('keeps').get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
+    db.collection("keeps")
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
           let keep = doc.data();
           keep.id = doc.id;
-          this.keeps.push(keep)
+          this.keeps.push(keep);
         });
-      })
-  }
+      });
+  },
 };
 </script>
 
