@@ -2,13 +2,14 @@
   <div class="add-keep container">
     <h2 class="center-align indigo-text">Add new keep</h2>
     <form @submit.prevent="addKeep">
-      <div class="field add-keep">
-        <label for="title">Keep Title</label>
+      <div class="field title">
+        <label for="title">Keep Title:</label>
         <input type="text" name="title" v-model="title" />
       </div>
-      <div class="add-keep" v-for="(item, index) in items" :key="index">
+      <div class="field" v-for="(ing, index) in ingredients" :key="index">
         <label for="item">Item: {{ index + 1 }}</label>
-        <input type="text" name="item" v-model="items[index]" />
+        <input type="text" name="item" v-model="ingredients[index]" />
+        <i class="material-icons delete" @click="deleteItem(ing)">delete</i>
       </div>
       <div class="filed add-keep">
         <label for="add-keep">Add keep and (press SPACE):</label>
@@ -35,7 +36,7 @@ export default {
     return {
       title: null,
       another: null,
-      items: [],
+      ingredients: [],
       feedback: null,
       slug: null,
     };
@@ -53,7 +54,7 @@ export default {
         db.collection("keeps")
           .add({
             title: this.title,
-            ingredients: this.items,
+            ingredients: this.ingredients,
             slug: this.slug,
           })
           .then(() => {
@@ -68,12 +69,17 @@ export default {
     },
     addItem() {
       if (this.another) {
-        this.items.push(this.another);
+        this.ingredients.push(this.another);
         this.another = null;
         this.feedback = null;
       } else {
         this.feedback = "You must enter a value to add an item !";
       }
+    },
+    deleteItem(ing) {
+      this.ingredients = this.ingredients.filter((ingredient) => {
+        return ingredient != ing;
+      });
     },
   },
 };
@@ -90,5 +96,14 @@ export default {
 }
 .add-keep .field {
   margin: 20px auto;
+  position: relative;
+}
+.add-keep .delete {
+  position: absolute;
+  right: 0px;
+  bottom: 16px;
+  color: #aaa;
+  font-size: 1.4em;
+  cursor: pointer;
 }
 </style>
